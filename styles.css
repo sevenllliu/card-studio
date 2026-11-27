@@ -177,8 +177,6 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .field-row.compact { margin-bottom: 10px; }
 .field-label { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-dim); margin-bottom: 7px; }
 .field-label .val { color: var(--accent); font-variant-numeric: tabular-nums; font-size: 10.5px; }
-.angle-label { justify-content: flex-start; gap: 8px; }
-.angle-label .val { margin-left: auto; }
 .label-right { display: flex; align-items: center; gap: 7px; }
 .reset-btn {
   border: none; background: transparent; color: var(--text-faint); cursor: pointer;
@@ -335,8 +333,8 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .grad-body.disabled { opacity: .75; }
 .grad-body.disabled .gradient-preview { opacity: .6; }
 .gradient-preview {
-  display: inline-block; width: 24px; height: 24px; flex: 0 0 24px;
-  border-radius: 5px; border: 1px solid var(--line);
+  width: 38px; height: 38px; margin: 2px 0 10px;
+  border-radius: 6px; border: 1px solid var(--line);
   box-shadow: inset 0 0 0 2px rgba(255,255,255,.55);
 }
 .seg-control { display: flex; gap: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px; padding: 3px; }
