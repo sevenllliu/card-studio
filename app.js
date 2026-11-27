@@ -644,10 +644,33 @@ function cssGradient(g) {
   return `${prefix}, ${parts.join(', ')})`;
 }
 
+function updateAngleDialColors(g) {
+  const dial = $('angleDial');
+  if (!g || !Array.isArray(g.stops) || !g.stops.length) {
+    dial.style.removeProperty('--dial-c1');
+    dial.style.removeProperty('--dial-c2');
+    return;
+  }
+  const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
+  const setDialColor = (prop, color) => {
+    if (/^#[0-9a-fA-F]{6}$/.test(color || '')) dial.style.setProperty(prop, color);
+    else dial.style.removeProperty(prop);
+  };
+  setDialColor('--dial-c1', stops[0].color);
+  setDialColor('--dial-c2', stops[stops.length - 1].color);
+}
+
 function updateGradientPreview() {
   const layer = getSelected();
   const preview = $('gradientPreview');
-  if (!layer) { preview.style.background = '#222'; return; }
+  const dial = $('angleDial');
+  if (!layer) {
+    preview.style.background = '#222';
+    dial.style.removeProperty('--dial-c1');
+    dial.style.removeProperty('--dial-c2');
+    return;
+  }
+  updateAngleDialColors(layer.gradient);
   preview.style.background = layer.gradient.mode === 'mask'
     ? `${cssGradient(layer.gradient)}, repeating-conic-gradient(#2a3042 0 25%, #1c2130 0 50%) 50% / 12px 12px`
     : cssGradient(layer.gradient);
