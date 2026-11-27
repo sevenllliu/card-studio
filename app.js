@@ -477,8 +477,10 @@ function syncGradientPanel() {
   $('gradEnabled').checked = g.enabled;
   $('gradBody').classList.toggle('disabled', !g.enabled);
   document.querySelectorAll('.seg').forEach((b) => b.classList.toggle('active', b.dataset.type === g.type));
-  $('angleRow').style.display = g.type === 'radial' ? 'none' : 'block';
-  $('radialGradientPreview').hidden = g.type !== 'radial';
+  $('angleRow').style.display = 'block';
+  const isRadial = g.type === 'radial';
+  $('angleValueRow').style.visibility = isRadial ? 'hidden' : 'visible';
+  $('angleDialWrap').hidden = isRadial;
   $('gradBlendRow').style.display = 'block';
   $('intensityLabel').textContent = '强度';
   $('gradAngle').value = g.angle;
@@ -663,19 +665,18 @@ function updateAngleDialColors(g) {
 
 function updateGradientPreview() {
   const layer = getSelected();
-  const previews = [$('gradientPreview'), $('radialGradientPreview')];
+  const preview = $('gradientPreview');
   const dial = $('angleDial');
   if (!layer) {
-    previews.forEach((p) => { p.style.background = '#222'; });
+    preview.style.background = '#222';
     dial.style.removeProperty('--dial-c1');
     dial.style.removeProperty('--dial-c2');
     return;
   }
   updateAngleDialColors(layer.gradient);
-  const bg = layer.gradient.mode === 'mask'
+  preview.style.background = layer.gradient.mode === 'mask'
     ? `${cssGradient(layer.gradient)}, repeating-conic-gradient(#2a3042 0 25%, #1c2130 0 50%) 50% / 12px 12px`
     : cssGradient(layer.gradient);
-  previews.forEach((p) => { p.style.background = bg; });
 }
 
 $('gradEnabled').addEventListener('change', (e) => {
