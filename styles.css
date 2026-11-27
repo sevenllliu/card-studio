@@ -226,8 +226,8 @@ button:disabled { cursor: not-allowed; opacity: .38; }
     radial-gradient(circle at 2px 50%, var(--text-faint) 0 2px, transparent 2.5px);
 }
 .angle-dial-axis {
-  position: absolute; left: 50%; top: 50%; width: 84px; height: 2px;
-  margin-left: -42px; margin-top: -1px; border-radius: 2px;
+  position: absolute; left: 50%; top: 50%; width: 106px; height: 2px;
+  margin-left: -53px; margin-top: -1px; border-radius: 2px; transform-origin: center center;
   background: linear-gradient(90deg, var(--dial-c1, var(--accent)), var(--dial-c2, var(--accent-2))); pointer-events: none;
 }
 .angle-dial-axis::before, .angle-dial-axis::after {
