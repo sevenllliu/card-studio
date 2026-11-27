@@ -24,11 +24,6 @@
       </div>
     </div>
 
-    <div class="topbar-title">
-      <input id="cardName" type="text" value="未命名卡牌" maxlength="40" spellcheck="false" aria-label="卡牌名称">
-      <span class="save-dot" id="saveDot">已自动保存</span>
-    </div>
-
     <div class="topbar-actions">
       <div class="history-group">
         <button class="icon-btn" id="undoBtn" title="撤销 (Ctrl+Z)" disabled>
@@ -89,12 +84,12 @@
     <!-- 右侧属性栏 -->
     <aside class="sidebar sidebar-right">
       <div class="side-tabs" id="sideTabs">
-        <button class="side-tab active" data-tab="gradient">渐变</button>
+        <button class="side-tab active" data-tab="solid">单色</button>
+        <button class="side-tab" data-tab="gradient">渐变</button>
         <button class="side-tab" data-tab="texture">材质</button>
-        <button class="side-tab" data-tab="solid">单色</button>
       </div>
 
-      <div class="side-pane" id="paneGradient">
+      <div class="side-pane" id="paneGradient" hidden>
       <section class="panel gradient-panel">
         <div class="panel-head">
           <h2>渐变效果</h2>
@@ -238,7 +233,7 @@
       </section>
       </div>
 
-      <div class="side-pane" id="paneSolid" hidden>
+      <div class="side-pane" id="paneSolid">
       <section class="panel solid-panel">
         <div class="panel-head">
           <h2>单色效果</h2>
