@@ -142,6 +142,7 @@ function addLayer(src, name, dimensions) {
     };
     state.layers.push(layer);
     state.selectedId = layer.id;
+    saveSelectedId();
     renderLayerList();
     syncAllPanels();
     render();
@@ -156,9 +157,14 @@ function getSelected() {
   return state.layers.find((l) => l.id === state.selectedId) || null;
 }
 
+function saveSelectedId() {
+  try { localStorage.setItem('card-studio-selected', state.selectedId || ''); } catch (err) {}
+}
+
 function selectLayer(id) {
   if (state.selectedId === id) return;
   state.selectedId = id;
+  saveSelectedId();
   renderLayerList();
   syncAllPanels();
   render();
@@ -169,6 +175,7 @@ function deleteLayer(id) {
   if (index < 0) return;
   state.layers.splice(index, 1);
   if (state.selectedId === id) state.selectedId = state.layers.length ? state.layers[Math.min(index, state.layers.length - 1)].id : null;
+  saveSelectedId();
   renderLayerList();
   syncAllPanels();
   render();
@@ -1321,6 +1328,7 @@ $('resetBtn').onclick = () => {
   if (!confirm('确定要清空所有图层并重置画布吗？')) return;
   state.layers = [];
   state.selectedId = null;
+  saveSelectedId();
   state.cardName = '未命名卡牌';
   W = canvas.width = 420;
   H = canvas.height = 588;
@@ -1370,6 +1378,12 @@ document.addEventListener('keydown', (e) => {
 (async () => {
   await loadLocal();
   if (!history.length) commit();
+  try {
+    const savedSel = localStorage.getItem('card-studio-selected');
+    if (savedSel && state.layers.some((l) => l.id === savedSel)) {
+      state.selectedId = savedSel;
+    }
+  } catch (err) {}
   renderLayerList();
   syncAllPanels();
   render();
