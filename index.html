@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卡艺工坊 · Card Studio</title>
+<link rel="icon" href="favicon.ico?v=3" sizes="any">
+<link rel="icon" type="image/png" href="favicon-32.png?v=3" sizes="32x32">
+<link rel="icon" type="image/png" href="favicon-16.png?v=3" sizes="16x16">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 64 64" fill="none"><defs><linearGradient id="bmBg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#f4f1ff"/><stop offset="1" stop-color="#e8e2ff"/></linearGradient><linearGradient id="bmCard" x1="19" y1="14" x2="50" y2="52" gradientUnits="userSpaceOnUse"><stop stop-color="#8b7cf8"/><stop offset="1" stop-color="#6c5ce7"/></linearGradient></defs><rect width="64" height="64" rx="15" fill="url(#bmBg)"/><rect x="13" y="13" width="30" height="38" rx="5" transform="rotate(-11 28 32)" fill="none" stroke="#a99bf5" stroke-width="3"/><g transform="rotate(6 34.5 33)"><rect x="19" y="14" width="31" height="38" rx="5" fill="url(#bmCard)"/><path d="M25 25h19M25 33h19M25 41h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g></svg>
+      </div>
+      <div class="brand-text">
+        <strong>卡艺工坊</strong>
+        <span>CARD STUDIO</span>
+      </div>
+    </div>
+
+    <div class="topbar-title">
+      <input id="cardName" type="text" value="未命名卡牌" maxlength="40" spellcheck="false" aria-label="卡牌名称">
+      <span class="save-dot" id="saveDot">已自动保存</span>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="history-group">
+        <button class="icon-btn" id="undoBtn" title="撤销 (Ctrl+Z)" disabled>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 14 4 9l5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10a6 6 0 0 1 0 12h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" id="redoBtn" title="重做 (Ctrl+Shift+Z)" disabled>
+          <svg viewBox="0 0 24 24" fill="none"><path d="m15 14 5-5-5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 9H10a6 6 0 0 0 0 12h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <button class="ghost-btn" id="resetBtn">重置</button>
+      <button class="primary-btn" id="exportBtn">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        导出 PNG
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- 左侧栏 -->
+    <aside class="sidebar sidebar-left">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>图层</h2>
+          <div class="head-actions">
+            <span class="badge" id="layerCount">0</span>
+            <button class="add-layer-btn" id="uploadBtn" title="上传图层">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" multiple hidden>
+
+        <div class="layer-list" id="layerList">
+          <div class="empty-layers" id="emptyLayers">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+            <span>还没有图层</span>
+            <small>上传图片开始创作吧</small>
+          </div>
+        </div>
+        <p class="layer-tip">在左侧图层面板拖拽调整层级</p>
+
+      </section>
+    </aside>
+
+    <!-- 画布区 -->
+    <section class="stage" id="stage">
+      <div class="stage-top">
+        <span class="stage-chip"><i class="dot"></i> 实时预览</span>
+        <span class="stage-chip" id="canvasSizeChip">上传图片后自动适配画布</span>
+      </div>
+      <div class="stage-center" id="stageCenter">
+        <div class="canvas-shell" id="canvasShell">
+          <canvas id="cardCanvas" width="420" height="588"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右侧属性栏 -->
+    <aside class="sidebar sidebar-right">
+      <div class="side-tabs" id="sideTabs">
+        <button class="side-tab active" data-tab="gradient">渐变</button>
+        <button class="side-tab" data-tab="texture">材质</button>
+        <button class="side-tab" data-tab="solid">单色</button>
+      </div>
+
+      <div class="side-pane" id="paneGradient">
+      <section class="panel gradient-panel">
+        <div class="panel-head">
+          <h2>渐变效果</h2>
+          <label class="switch" title="启用 / 关闭渐变">
+            <input type="checkbox" id="gradEnabled">
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </label>
+        </div>
+
+        <div id="gradBody" class="grad-body disabled">
+          <div class="grad-tabs">
+            <button class="grad-tab active" data-mode="overlay">颜色叠加</button>
+            <button class="grad-tab" data-mode="mask">透明蒙版</button>
+          </div>
+
+          <div class="gradient-preview" id="gradientPreview"></div>
+
+          <div class="field-row">
+            <label class="field-label">渐变类型</label>
+            <div class="seg-control">
+              <button class="seg active" data-type="linear">线性</button>
+              <button class="seg" data-type="radial">径向</button>
+            </div>
+          </div>
+
+          <div class="field-row" id="angleRow">
+            <label class="field-label">
+              <span>角度</span>
+              <span class="val" id="angleVal">90°</span>
+            </label>
+            <div class="angle-dial" id="angleDial" title="拖动转盘设置角度">
+              <span class="dial-mark mark-0">0°</span>
+              <span class="dial-mark mark-90">90°</span>
+              <span class="dial-mark mark-180">180°</span>
+              <span class="dial-mark mark-270">270°</span>
+              <div class="angle-dial-axis" id="angleAxis"></div>
+              <span class="angle-dial-center" id="angleCenter">90°</span>
+            </div>
+            <input type="range" id="gradAngle" class="range" min="0" max="360" value="90" hidden>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">
+              <span id="intensityLabel">渐变强度</span>
+              <span class="val" id="gradOpacityVal">70%</span>
+            </label>
+            <input type="range" id="gradOpacity" class="range" min="0" max="100" value="70">
+          </div>
+
+          <div class="field-row" id="gradBlendRow">
+            <label class="field-label">渐变混合模式</label>
+            <select id="gradBlend" class="select">
+              <option value="source-over">正常</option>
+              <option value="multiply">正片叠底</option>
+              <option value="screen">滤色</option>
+              <option value="overlay">叠加</option>
+              <option value="soft-light">柔光</option>
+              <option value="hard-light">强光</option>
+              <option value="color-dodge">颜色减淡</option>
+              <option value="difference">差值</option>
+            </select>
+          </div>
+
+          <div class="stops-head">
+            <label class="field-label">颜色节点</label>
+            <button class="mini-btn" id="addStopBtn">＋ 添加</button>
+          </div>
+          <div class="stops-list" id="stopsList"></div>
+          <p class="tip">点击色块修改颜色，拖动滑块调整节点位置。</p>
+        </div>
+
+        <div id="gradNoLayer" class="no-selection small">
+          <span>请先选中一个图层</span>
+        </div>
+      </section>
+      </div>
+
+      <div class="side-pane" id="paneTexture" hidden>
+      <section class="panel texture-panel">
+        <div class="panel-head">
+          <h2>材质效果</h2>
+          <label class="switch" title="启用 / 关闭材质">
+            <input type="checkbox" id="texEnabled">
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </label>
+        </div>
+
+        <div id="texBody" class="grad-body disabled">
+          <button class="tex-upload" id="texUploadBtn" title="点击上传，或直接粘贴图片（Ctrl+V）">
+            <span class="tex-upload-icon">＋</span>
+            <span id="texUploadLabel">粘贴或上传材质图</span>
+          </button>
+          <input type="file" id="texFileInput" accept="image/*" hidden>
+
+          <div class="tex-preview" id="texPreview" hidden>
+            <img id="texPreviewImg" alt="材质预览">
+            <button class="tex-remove" id="texRemoveBtn" title="移除材质">×</button>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">
+              <span>材质缩放</span>
+              <span class="label-right">
+                <span class="val" id="texScaleVal">100%</span>
+                <button class="reset-btn" id="texScaleReset" title="重置缩放">↺</button>
+              </span>
+            </label>
+            <input type="range" id="texScale" class="range" min="10" max="300" value="100">
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">
+              <span>材质强度</span>
+              <span class="label-right">
+                <span class="val" id="texOpacityVal">100%</span>
+                <button class="reset-btn" id="texOpacityReset" title="重置强度">↺</button>
+              </span>
+            </label>
+            <input type="range" id="texOpacity" class="range" min="0" max="100" value="100">
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">材质混合模式</label>
+            <select id="texBlend" class="select">
+              <option value="source-over">正常</option>
+              <option value="multiply">正片叠底</option>
+              <option value="screen">滤色</option>
+              <option value="overlay">叠加</option>
+              <option value="soft-light">柔光</option>
+              <option value="hard-light">强光</option>
+              <option value="color-dodge">颜色减淡</option>
+              <option value="difference">差值</option>
+            </select>
+          </div>
+          <p class="tip">材质只覆盖图案非透明区域，透明区域保持透明。</p>
+        </div>
+
+        <div id="texNoLayer" class="no-selection small">
+          <span>请先选中一个图层</span>
+        </div>
+      </section>
+      </div>
+
+      <div class="side-pane" id="paneSolid" hidden>
+      <section class="panel solid-panel">
+        <div class="panel-head">
+          <h2>单色效果</h2>
+          <label class="switch" title="启用 / 关闭单色">
+            <input type="checkbox" id="solidEnabled">
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </label>
+        </div>
+
+        <div id="solidBody" class="grad-body disabled">
+          <div class="field-row">
+            <label class="field-label"><span>单色颜色</span></label>
+            <div class="color-row">
+              <input type="color" id="solidColor" class="color-input" value="#6c5ce7" title="单色颜色">
+              <input type="text" id="solidHex" class="hex-input" value="#6C5CE7" maxlength="7" spellcheck="false" title="十六进制颜色值">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">
+              <span>单色强度</span>
+              <span class="label-right">
+                <span class="val" id="solidOpacityVal">100%</span>
+                <button class="reset-btn" id="solidOpacityReset" title="重置强度">↺</button>
+              </span>
+            </label>
+            <input type="range" id="solidOpacity" class="range" min="0" max="100" value="100">
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">单色混合模式</label>
+            <select id="solidBlend" class="select">
+              <option value="source-over">正常</option>
+              <option value="multiply">正片叠底</option>
+              <option value="screen">滤色</option>
+              <option value="overlay">叠加</option>
+              <option value="soft-light">柔光</option>
+              <option value="hard-light">强光</option>
+              <option value="color-dodge">颜色减淡</option>
+              <option value="difference">差值</option>
+            </select>
+          </div>
+          <p class="tip">单色只覆盖图案非透明区域，透明区域保持透明。</p>
+        </div>
+
+        <div id="solidNoLayer" class="no-selection small">
+          <span>请先选中一个图层</span>
+        </div>
+      </section>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
