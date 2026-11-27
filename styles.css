@@ -338,12 +338,6 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .grad-body { transition: opacity .2s; }
 .grad-body.disabled { opacity: .75; }
 .grad-body.disabled .gradient-preview { opacity: .6; }
-.grad-tabs { display: flex; gap: 4px; padding: 3px; background: var(--panel-2); border-radius: 8px; margin-bottom: 12px; }
-.grad-tab {
-  flex: 1; padding: 7px 4px; border: none; background: transparent; color: var(--text-dim);
-  border-radius: 6px; font-size: 11px; transition: .15s;
-}
-.grad-tab.active { background: var(--panel); color: var(--accent); box-shadow: 0 2px 8px rgba(35,45,80,.08); }
 .gradient-preview {
   height: 34px; border-radius: 8px; margin-bottom: 14px; border: 1px solid var(--line);
   box-shadow: inset 0 0 0 3px rgba(255,255,255,.5);
