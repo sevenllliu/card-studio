@@ -346,14 +346,14 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 }
 .gradient-preview.is-animating { will-change: background-position; }
 .gradient-preview.is-animating::after {
-  content: ''; position: absolute; inset: 0; border-radius: 5px; pointer-events: none;
-  background: linear-gradient(var(--sheen-angle, 105deg), transparent 30%, rgba(255,255,255,.12) 44%, rgba(255,255,255,.55) 50%, rgba(255,255,255,.12) 56%, transparent 70%);
-  background-size: 260% 100%; mix-blend-mode: screen;
+  content: ''; position: absolute; inset: -100%; pointer-events: none;
+  background: linear-gradient(90deg, transparent 34%, rgba(255,255,255,.12) 45%, rgba(255,255,255,.55) 50%, rgba(255,255,255,.12) 55%, transparent 66%);
+  mix-blend-mode: screen;
   animation: gradientSheenSweep var(--sheen-duration, 2s) linear infinite;
 }
 @keyframes gradientSheenSweep {
-  from { background-position: 160% 0; }
-  to { background-position: -60% 0; }
+  from { transform: rotate(var(--sheen-rotate, 0deg)) translateX(-80%); }
+  to { transform: rotate(var(--sheen-rotate, 0deg)) translateX(80%); }
 }
 .seg-control { display: flex; gap: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px; padding: 3px; }
 .seg { flex: 1; padding: 6px; border: none; background: transparent; color: var(--text-dim); border-radius: 5px; font-size: 11px; }
