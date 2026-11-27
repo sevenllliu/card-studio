@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="favicon-32.png?v=3" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16.png?v=3" sizes="16x16">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
-<link rel="stylesheet" href="styles.css?v=2026112728">
+<link rel="stylesheet" href="styles.css?v=2026112729">
 </head>
 <body>
 <div class="app">
@@ -139,6 +139,22 @@
               <span class="val" id="gradOpacityVal">70%</span>
             </label>
             <input type="range" id="gradOpacity" class="range" min="0" max="100" value="70">
+          </div>
+
+          <div class="field-row inline-switch">
+            <label class="field-label" for="gradAnim">动效</label>
+            <label class="switch" title="开启动态渐变">
+              <input type="checkbox" id="gradAnim">
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </label>
+          </div>
+
+          <div class="field-row" id="gradSpeedRow" hidden>
+            <label class="field-label">
+              <span>速度</span>
+              <span class="val" id="gradSpeedVal">1.0×</span>
+            </label>
+            <input type="range" id="gradSpeed" class="range" min="20" max="300" value="100">
           </div>
 
           <div class="stops-head">
@@ -278,6 +294,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=2026112728"></script>
+<script src="app.js?v=2026112729"></script>
 </body>
 </html>
