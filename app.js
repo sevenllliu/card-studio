@@ -476,11 +476,10 @@ function syncGradientPanel() {
   const g = layer.gradient;
   $('gradEnabled').checked = g.enabled;
   $('gradBody').classList.toggle('disabled', !g.enabled);
-  document.querySelectorAll('.grad-tab').forEach((b) => b.classList.toggle('active', b.dataset.mode === g.mode));
   document.querySelectorAll('.seg').forEach((b) => b.classList.toggle('active', b.dataset.type === g.type));
   $('angleRow').style.display = g.type === 'radial' ? 'none' : 'block';
-  $('gradBlendRow').style.display = g.mode === 'mask' ? 'none' : 'block';
-  $('intensityLabel').textContent = g.mode === 'mask' ? '蒙版强度' : '强度';
+  $('gradBlendRow').style.display = 'block';
+  $('intensityLabel').textContent = '强度';
   $('gradAngle').value = g.angle;
   $('angleVal').textContent = `${g.angle}°`;
   $('angleCenter').textContent = `${g.angle}°`;
@@ -662,18 +661,6 @@ $('gradEnabled').addEventListener('change', (e) => {
   renderLayerList();
   render();
   commit();
-});
-
-document.querySelectorAll('.grad-tab').forEach((btn) => {
-  btn.onclick = () => {
-    const layer = getSelected();
-    if (!layer) return;
-    layer.gradient.mode = btn.dataset.mode;
-    layer._gradKey = null;
-    syncGradientPanel();
-    render();
-    commit();
-  };
 });
 
 document.querySelectorAll('.seg').forEach((btn) => {
@@ -1074,8 +1061,10 @@ function restore(packedStr) {
     loadImage(l.src);
     const texture = JSON.parse(JSON.stringify(l.texture || defaultTexture()));
     const solid = JSON.parse(JSON.stringify(l.solid || defaultSolid()));
+    const gradient = JSON.parse(JSON.stringify(l.gradient));
+    gradient.mode = 'overlay';
     if (texture.src) loadImage(texture.src);
-    return { ...l, gradient: JSON.parse(JSON.stringify(l.gradient)), texture, solid };
+    return { ...l, gradient, texture, solid };
   });
   renderLayerList();
   syncAllPanels();
