@@ -352,8 +352,8 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   animation: gradientSheenSweep var(--sheen-duration, 2s) linear infinite;
 }
 @keyframes gradientSheenSweep {
-  from { transform: rotate(var(--sheen-rotate, 0deg)) translateX(-80%); }
-  to { transform: rotate(var(--sheen-rotate, 0deg)) translateX(80%); }
+  from { transform: rotate(var(--sheen-rotate, 0deg)) translateX(80%); }
+  to { transform: rotate(var(--sheen-rotate, 0deg)) translateX(-80%); }
 }
 .seg-control { display: flex; gap: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px; padding: 3px; }
 .seg { flex: 1; padding: 6px; border: none; background: transparent; color: var(--text-dim); border-radius: 5px; font-size: 11px; }
