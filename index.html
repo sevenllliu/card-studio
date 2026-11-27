@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="favicon-32.png?v=3" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16.png?v=3" sizes="16x16">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
-<link rel="stylesheet" href="styles.css?v=2026112723">
+<link rel="stylesheet" href="styles.css?v=2026112724">
 </head>
 <body>
 <div class="app">
@@ -142,7 +142,10 @@
           </div>
 
           <div class="stops-head">
-            <label class="field-label">颜色节点</label>
+            <div class="stops-head-left">
+              <label class="field-label">颜色节点</label>
+              <button class="reset-btn" id="resetStopsBtn" title="均分颜色节点">↺</button>
+            </div>
             <button class="mini-btn" id="addStopBtn">＋ 添加</button>
           </div>
           <div class="stops-list" id="stopsList"></div>
@@ -275,6 +278,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=2026112723"></script>
+<script src="app.js?v=2026112724"></script>
 </body>
 </html>
