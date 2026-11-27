@@ -415,7 +415,7 @@ function drawGradientSheen(o, w, h, g, phase) {
   const dx = Math.cos(rad);
   const dy = Math.sin(rad);
   const half = Math.abs(dx) * w / 2 + Math.abs(dy) * h / 2;
-  const pos = (phase * 2 - 1) * half * 1.25;
+  const pos = (1 - phase * 2) * half * 1.25;
   const band = Math.max(18, half * 0.5);
   const sheen = o.createLinearGradient(
     cx + dx * (pos - band), cy + dy * (pos - band),
