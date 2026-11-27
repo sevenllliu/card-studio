@@ -100,11 +100,10 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .panel-head h2 { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin: 0; color: var(--text); font-weight: 700; }
 .panel-head h2::before { content: ''; display: inline-block; width: 3px; height: 12px; background: var(--accent); border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
-.badge { font-size: 10px; color: var(--text-dim); background: var(--panel-3); padding: 2px 8px; border-radius: 10px; }
+.sidebar-left .panel { border-bottom: none; }
 .panel-sub { font-size: 11px; color: var(--text-faint); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ============ 上传入口 ============ */
-.head-actions { display: flex; align-items: center; gap: 7px; }
 .sidebar-left.drag-over {
   background: rgba(108,92,231,.07);
   box-shadow: inset 0 0 0 2px var(--accent);
