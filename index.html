@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="favicon-32.png?v=3" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16.png?v=3" sizes="16x16">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
-<link rel="stylesheet" href="styles.css?v=2026112707">
+<link rel="stylesheet" href="styles.css?v=2026112708">
 </head>
 <body>
 <div class="app">
@@ -93,6 +93,20 @@
         </div>
 
         <div id="gradBody" class="grad-body disabled">
+          <div class="field-row" id="gradBlendRow">
+            <label class="field-label">渐变混合模式</label>
+            <select id="gradBlend" class="select">
+              <option value="source-over">正常</option>
+              <option value="multiply">正片叠底</option>
+              <option value="screen">滤色</option>
+              <option value="overlay">叠加</option>
+              <option value="soft-light">柔光</option>
+              <option value="hard-light">强光</option>
+              <option value="color-dodge">颜色减淡</option>
+              <option value="difference">差值</option>
+            </select>
+          </div>
+
           <div class="grad-tabs">
             <button class="grad-tab active" data-mode="overlay">颜色叠加</button>
             <button class="grad-tab" data-mode="mask">透明蒙版</button>
@@ -132,20 +146,6 @@
             <input type="range" id="gradOpacity" class="range" min="0" max="100" value="70">
           </div>
 
-          <div class="field-row" id="gradBlendRow">
-            <label class="field-label">渐变混合模式</label>
-            <select id="gradBlend" class="select">
-              <option value="source-over">正常</option>
-              <option value="multiply">正片叠底</option>
-              <option value="screen">滤色</option>
-              <option value="overlay">叠加</option>
-              <option value="soft-light">柔光</option>
-              <option value="hard-light">强光</option>
-              <option value="color-dodge">颜色减淡</option>
-              <option value="difference">差值</option>
-            </select>
-          </div>
-
           <div class="stops-head">
             <label class="field-label">颜色节点</label>
             <button class="mini-btn" id="addStopBtn">＋ 添加</button>
@@ -171,6 +171,20 @@
         </div>
 
         <div id="texBody" class="grad-body disabled">
+          <div class="field-row">
+            <label class="field-label">材质混合模式</label>
+            <select id="texBlend" class="select">
+              <option value="source-over">正常</option>
+              <option value="multiply">正片叠底</option>
+              <option value="screen">滤色</option>
+              <option value="overlay">叠加</option>
+              <option value="soft-light">柔光</option>
+              <option value="hard-light">强光</option>
+              <option value="color-dodge">颜色减淡</option>
+              <option value="difference">差值</option>
+            </select>
+          </div>
+
           <button class="tex-upload" id="texUploadBtn" title="点击上传，或直接粘贴图片（Ctrl+V）">
             <span class="tex-upload-icon">＋</span>
             <span id="texUploadLabel">粘贴或上传材质图</span>
@@ -204,19 +218,6 @@
             <input type="range" id="texOpacity" class="range" min="0" max="100" value="100">
           </div>
 
-          <div class="field-row">
-            <label class="field-label">材质混合模式</label>
-            <select id="texBlend" class="select">
-              <option value="source-over">正常</option>
-              <option value="multiply">正片叠底</option>
-              <option value="screen">滤色</option>
-              <option value="overlay">叠加</option>
-              <option value="soft-light">柔光</option>
-              <option value="hard-light">强光</option>
-              <option value="color-dodge">颜色减淡</option>
-              <option value="difference">差值</option>
-            </select>
-          </div>
           <p class="tip">材质只覆盖图案非透明区域，透明区域保持透明。</p>
         </div>
 
@@ -238,6 +239,20 @@
 
         <div id="solidBody" class="grad-body disabled">
           <div class="field-row">
+            <label class="field-label">混合模式</label>
+            <select id="solidBlend" class="select">
+              <option value="source-over">正常</option>
+              <option value="multiply">正片叠底</option>
+              <option value="screen">滤色</option>
+              <option value="overlay">叠加</option>
+              <option value="soft-light">柔光</option>
+              <option value="hard-light">强光</option>
+              <option value="color-dodge">颜色减淡</option>
+              <option value="difference">差值</option>
+            </select>
+          </div>
+
+          <div class="field-row">
             <label class="field-label"><span>颜色</span></label>
             <div class="color-row">
               <input type="color" id="solidColor" class="color-input" value="#6c5ce7" title="颜色">
@@ -255,20 +270,6 @@
             </label>
             <input type="range" id="solidOpacity" class="range" min="0" max="100" value="100">
           </div>
-
-          <div class="field-row">
-            <label class="field-label">混合模式</label>
-            <select id="solidBlend" class="select">
-              <option value="source-over">正常</option>
-              <option value="multiply">正片叠底</option>
-              <option value="screen">滤色</option>
-              <option value="overlay">叠加</option>
-              <option value="soft-light">柔光</option>
-              <option value="hard-light">强光</option>
-              <option value="color-dodge">颜色减淡</option>
-              <option value="difference">差值</option>
-            </select>
-          </div>
         </div>
 
         <div id="solidNoLayer" class="no-selection small">
@@ -282,6 +283,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=2026112707"></script>
+<script src="app.js?v=2026112708"></script>
 </body>
 </html>
