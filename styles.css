@@ -105,13 +105,6 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 
 /* ============ 上传入口 ============ */
 .head-actions { display: flex; align-items: center; gap: 7px; }
-.add-layer-btn {
-  width: 24px; height: 24px; display: grid; place-items: center; padding: 0;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2);
-  color: var(--text-dim); transition: .14s;
-}
-.add-layer-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
-.add-layer-btn svg { width: 14px; height: 14px; }
 .sidebar-left.drag-over {
   background: rgba(108,92,231,.07);
   box-shadow: inset 0 0 0 2px var(--accent);
