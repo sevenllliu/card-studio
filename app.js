@@ -17,6 +17,11 @@ const state = {
 
 const imageCache = new Map();
 
+const gradMotion = { raf: 0, last: 0, phase: 0, exportPhase: null, lastBucket: -1 };
+function gradientPhase() {
+  return gradMotion.exportPhase == null ? gradMotion.phase : gradMotion.exportPhase;
+}
+
 let uidSeed = 0;
 const uid = () => `id_${Date.now().toString(36)}_${(uidSeed++).toString(36)}`;
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -62,6 +67,8 @@ function defaultGradient() {
     angle: 90,
     opacity: 0.7,
     blendMode: 'source-over',
+    animate: false,
+    speed: 1,
     stops: [
       { id: uid(), color: '#8b7cf8', pos: 0 },
       { id: uid(), color: '#4ec9dc', pos: 100 }
@@ -296,35 +303,57 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-function makeGradient(c, w, h, g) {
+function makeGradient(c, w, h, g, phase = 0) {
   const cx = w / 2;
   const cy = h / 2;
   if (g.type === 'radial') {
-    return c.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) / 1.35);
+    const base = Math.max(w, h) / 1.35;
+    const pulse = g.animate ? 1 + 0.12 * Math.sin(phase * Math.PI * 2) : 1;
+    return c.createRadialGradient(cx, cy, 0, cx, cy, base * pulse);
   }
   const rad = (g.angle * Math.PI) / 180;
   const len = Math.sqrt(w * w + h * h) / 2;
+  const shift = g.animate ? Math.sin(phase * Math.PI * 2) * len * 0.35 : 0;
+  const dx = Math.cos(rad) * shift;
+  const dy = Math.sin(rad) * shift;
   return c.createLinearGradient(
-    cx - Math.cos(rad) * len, cy - Math.sin(rad) * len,
-    cx + Math.cos(rad) * len, cy + Math.sin(rad) * len
+    cx - Math.cos(rad) * len + dx, cy - Math.sin(rad) * len + dy,
+    cx + Math.cos(rad) * len + dx, cy + Math.sin(rad) * len + dy
   );
+}
+
+function animPhaseKey(g) {
+  return g && g.enabled && g.animate ? Math.round(gradientPhase() * 90) : 'static';
+}
+
+function prepareLayerCanvas(layer, prop, w, h) {
+  let off = layer[prop];
+  if (!off || off.width !== w || off.height !== h) {
+    off = document.createElement('canvas');
+    off.width = w;
+    off.height = h;
+    layer[prop] = off;
+  }
+  const o = off.getContext('2d');
+  o.clearRect(0, 0, w, h);
+  o.globalAlpha = 1;
+  o.globalCompositeOperation = 'source-over';
+  return off;
 }
 
 function getGradientCanvas(layer, img) {
   const w = Math.max(1, Math.round(layer.w));
   const h = Math.max(1, Math.round(layer.h));
-  const key = JSON.stringify([layer.gradient, w, h]);
+  const g = layer.gradient;
+  const key = `${JSON.stringify([g, w, h])}|${animPhaseKey(g)}`;
   if (layer._gradKey === key && layer._gradCanvas) return layer._gradCanvas;
 
-  const off = document.createElement('canvas');
-  off.width = w;
-  off.height = h;
+  const off = prepareLayerCanvas(layer, '_gradCanvas', w, h);
   const o = off.getContext('2d');
   o.drawImage(img, 0, 0, w, h);
 
-  const g = layer.gradient;
   const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
-  const grad = makeGradient(o, w, h, g);
+  const grad = makeGradient(o, w, h, g, animPhaseKey(g) === 'static' ? 0 : gradientPhase());
 
   if (g.mode === 'mask') {
     o.globalCompositeOperation = 'destination-in';
@@ -351,7 +380,6 @@ function getGradientCanvas(layer, img) {
   }
 
   layer._gradKey = key;
-  layer._gradCanvas = off;
   return off;
 }
 
@@ -367,15 +395,13 @@ function getTextureCanvas(layer, source, img) {
   const w = Math.max(1, Math.round(layer.w));
   const h = Math.max(1, Math.round(layer.h));
   const t = layer.texture;
-  const key = JSON.stringify([t, w, h, layer.gradient]);
+  const key = `${JSON.stringify([t, w, h, layer.gradient])}|${animPhaseKey(layer.gradient)}`;
   if (layer._texKey === key && layer._texCanvas) return layer._texCanvas;
 
   const texImg = t.src ? imageCache.get(t.src) : null;
   if (!texImg || !texImg.complete || !texImg.naturalWidth) return source;
 
-  const off = document.createElement('canvas');
-  off.width = w;
-  off.height = h;
+  const off = prepareLayerCanvas(layer, '_texCanvas', w, h);
   const o = off.getContext('2d');
   o.drawImage(source, 0, 0, w, h);
 
@@ -400,12 +426,10 @@ function getSolidCanvas(layer, source, img) {
   const w = Math.max(1, Math.round(layer.w));
   const h = Math.max(1, Math.round(layer.h));
   const s = layer.solid;
-  const key = JSON.stringify([s, w, h, layer.gradient, layer.texture]);
+  const key = `${JSON.stringify([s, w, h, layer.gradient, layer.texture])}|${animPhaseKey(layer.gradient)}`;
   if (layer._solidKey === key && layer._solidCanvas) return layer._solidCanvas;
 
-  const off = document.createElement('canvas');
-  off.width = w;
-  off.height = h;
+  const off = prepareLayerCanvas(layer, '_solidCanvas', w, h);
   const o = off.getContext('2d');
   o.drawImage(source, 0, 0, w, h);
 
@@ -489,6 +513,11 @@ function syncGradientPanel() {
   $('gradOpacity').value = Math.round(g.opacity * 100);
   $('gradOpacityVal').textContent = `${Math.round(g.opacity * 100)}%`;
   $('gradBlend').value = g.blendMode;
+  $('gradAnim').checked = !!g.animate;
+  $('gradSpeedRow').hidden = !g.animate;
+  const speed = clamp(g.speed || 1, 0.2, 3);
+  $('gradSpeed').value = Math.round(speed * 100);
+  $('gradSpeedVal').textContent = `${speed.toFixed(1)}×`;
   renderStops();
   updateGradientPreview();
 }
@@ -693,7 +722,63 @@ function updateGradientPreview() {
   preview.style.background = layer.gradient.mode === 'mask'
     ? `${cssGradient(layer.gradient)}, repeating-conic-gradient(#2a3042 0 25%, #1c2130 0 50%) 50% / 12px 12px`
     : cssGradient(layer.gradient);
+  applyPreviewPhase();
 }
+
+function applyPreviewPhase() {
+  const layer = getSelected();
+  const preview = $('gradientPreview');
+  if (!layer || !layer.gradient.enabled || !layer.gradient.animate) {
+    preview.classList.remove('is-animating');
+    preview.style.removeProperty('background-size');
+    preview.style.removeProperty('background-position');
+    return;
+  }
+  const p = Math.round((0.5 + 0.5 * Math.sin(gradientPhase() * Math.PI * 2)) * 100);
+  preview.classList.add('is-animating');
+  preview.style.backgroundSize = '220% 220%';
+  preview.style.backgroundPosition = `${p}% 50%`;
+}
+
+function anyGradientAnimating() {
+  return state.layers.some((l) => l.visible && l.gradient && l.gradient.enabled && l.gradient.animate);
+}
+
+function animateTick(now) {
+  gradMotion.raf = 0;
+  if (!anyGradientAnimating() || document.hidden) return;
+  if (!gradMotion.last) gradMotion.last = now;
+  const dt = Math.min(now - gradMotion.last, 100);
+  gradMotion.last = now;
+  const speed = Math.max(...state.layers
+    .filter((l) => l.visible && l.gradient && l.gradient.enabled && l.gradient.animate)
+    .map((l) => clamp(l.gradient.speed || 1, 0.2, 3)));
+  gradMotion.phase = (gradMotion.phase + (dt * speed) / 6000) % 1;
+  const bucket = Math.round(gradMotion.phase * 90);
+  if (bucket !== gradMotion.lastBucket) {
+    gradMotion.lastBucket = bucket;
+    render();
+    applyPreviewPhase();
+  }
+  gradMotion.raf = requestAnimationFrame(animateTick);
+}
+
+function syncAnimLoop() {
+  if (document.hidden || !anyGradientAnimating()) {
+    if (gradMotion.raf) cancelAnimationFrame(gradMotion.raf);
+    gradMotion.raf = 0;
+    gradMotion.last = 0;
+    gradMotion.lastBucket = -1;
+    return;
+  }
+  if (!gradMotion.raf) {
+    gradMotion.last = 0;
+    gradMotion.lastBucket = -1;
+    gradMotion.raf = requestAnimationFrame(animateTick);
+  }
+}
+
+document.addEventListener('visibilitychange', syncAnimLoop);
 
 $('gradEnabled').addEventListener('change', (e) => {
   const layer = getSelected();
@@ -702,6 +787,7 @@ $('gradEnabled').addEventListener('change', (e) => {
   $('gradBody').classList.toggle('disabled', !layer.gradient.enabled);
   renderLayerList();
   render();
+  syncAnimLoop();
   commit();
 });
 
@@ -784,6 +870,29 @@ $('gradBlend').addEventListener('change', (e) => {
   layer._gradKey = null;
   render();
   commit();
+});
+
+$('gradAnim').addEventListener('change', (e) => {
+  const layer = getSelected();
+  if (!layer) return;
+  layer.gradient.animate = e.target.checked;
+  $('gradSpeedRow').hidden = !e.target.checked;
+  layer._gradKey = null;
+  layer._texKey = null;
+  layer._solidKey = null;
+  render();
+  syncAnimLoop();
+  updateGradientPreview();
+  commit();
+});
+
+$('gradSpeed').addEventListener('input', (e) => {
+  const layer = getSelected();
+  if (!layer) return;
+  const speed = clamp(parseInt(e.target.value, 10) / 100, 0.2, 3);
+  layer.gradient.speed = speed;
+  $('gradSpeedVal').textContent = `${speed.toFixed(1)}×`;
+  commitDebounced();
 });
 
 /* =========================================================
@@ -1107,12 +1216,15 @@ function restore(packedStr) {
     const solid = JSON.parse(JSON.stringify(l.solid || defaultSolid()));
     const gradient = JSON.parse(JSON.stringify(l.gradient));
     gradient.mode = 'overlay';
+    gradient.animate = !!gradient.animate;
+    gradient.speed = clamp(Number(gradient.speed) || 1, 0.2, 3);
     if (texture.src) loadImage(texture.src);
     return { ...l, gradient, texture, solid };
   });
   renderLayerList();
   syncAllPanels();
   render();
+  syncAnimLoop();
   pruneImageCache();
 }
 
@@ -1378,7 +1490,12 @@ $('exportBtn').onclick = () => {
   out.height = H * scale;
   const oc = out.getContext('2d');
   oc.scale(scale, scale);
-  render(oc, { export: true });
+  gradMotion.exportPhase = 0;
+  try {
+    render(oc, { export: true });
+  } finally {
+    gradMotion.exportPhase = null;
+  }
   const a = document.createElement('a');
   a.download = `${(state.cardName || '卡牌').replace(/[\\/:*?"<>|]/g, '_')}.png`;
   a.href = out.toDataURL('image/png');
@@ -1424,5 +1541,6 @@ document.addEventListener('keydown', (e) => {
   renderLayerList();
   syncAllPanels();
   render();
+  syncAnimLoop();
   updateHistoryButtons();
 })();
