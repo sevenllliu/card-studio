@@ -100,7 +100,7 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .panel-head h2 { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin: 0; color: var(--text); font-weight: 700; }
 .panel-head h2::before { content: ''; display: inline-block; width: 3px; height: 12px; background: var(--accent); border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
-.sidebar-left .panel { border-bottom: none; }
+.panel { border-bottom: none; }
 .panel-sub { font-size: 11px; color: var(--text-faint); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ============ 上传入口 ============ */
@@ -381,7 +381,6 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .tip { font-size: 10px; color: var(--text-faint); margin: 10px 0 0; line-height: 1.6; }
 
 /* ============ 材质面板 ============ */
-.texture-panel { border-bottom: none; }
 .tex-upload {
   width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px;
   padding: 13px; margin-bottom: 14px; background: var(--panel-2); color: var(--text-dim);
