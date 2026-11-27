@@ -339,8 +339,9 @@ function makeGradient(c, w, h, g, phase = 0) {
   const ux = Math.cos(rad);
   const uy = Math.sin(rad);
   if (g.animate) {
-    const span = 6 * len;
-    const shift = phase * 2 * len;
+    const half = Math.abs(ux) * w / 2 + Math.abs(uy) * h / 2;
+    const span = 6 * half;
+    const shift = phase * 2 * half;
     return c.createLinearGradient(
       cx - ux * span / 2 + ux * shift, cy - uy * span / 2 + uy * shift,
       cx + ux * span / 2 + ux * shift, cy + uy * span / 2 + uy * shift
@@ -355,12 +356,12 @@ function makeGradient(c, w, h, g, phase = 0) {
 function drawGradientSheen(o, w, h, g, phase) {
   const cx = w / 2;
   const cy = h / 2;
-  const len = Math.sqrt(w * w + h * h) / 2;
   const rad = (g.angle * Math.PI) / 180;
   const dx = Math.cos(rad);
   const dy = Math.sin(rad);
-  const pos = (phase * 2 - 1) * len * 1.25;
-  const band = Math.max(18, len * 0.5);
+  const half = Math.abs(dx) * w / 2 + Math.abs(dy) * h / 2;
+  const pos = (phase * 2 - 1) * half * 1.25;
+  const band = Math.max(18, half * 0.5);
   const sheen = o.createLinearGradient(
     cx + dx * (pos - band), cy + dy * (pos - band),
     cx + dx * (pos + band), cy + dy * (pos + band)
