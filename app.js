@@ -184,7 +184,6 @@ const trashSvg = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 4h4M6
 
 function renderLayerList() {
   const list = $('layerList');
-  $('layerCount').textContent = state.layers.length;
   $('emptyLayers').style.display = state.layers.length ? 'none' : 'flex';
 
   list.querySelectorAll('.layer-item').forEach((el) => el.remove());
