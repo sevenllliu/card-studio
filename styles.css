@@ -347,7 +347,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .gradient-preview.is-animating { will-change: background-position; }
 .gradient-preview.is-animating::after {
   content: ''; position: absolute; inset: -100%; pointer-events: none;
-  background: linear-gradient(90deg, transparent 34%, rgba(255,255,255,.12) 45%, rgba(255,255,255,.55) 50%, rgba(255,255,255,.12) 55%, transparent 66%);
+  background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,.18) 42%, rgba(255,255,255,.42) 47%, rgba(255,255,255,.78) 50%, rgba(255,255,255,.42) 53%, rgba(255,255,255,.18) 58%, transparent 70%);
   mix-blend-mode: screen;
   animation: gradientSheenSweep var(--sheen-duration, 2s) linear infinite;
 }
