@@ -303,6 +303,29 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+function buildCyclicStops(g, cycles = 3) {
+  const src = [...(g.stops || [])].sort((a, b) => a.pos - b.pos);
+  if (!src.length) return [{ p: 0, color: '#ffffff' }, { p: 1, color: '#ffffff' }];
+  const norm = src.map((s) => ({ u: clamp(Number(s.pos) || 0, 0, 100), color: s.color }));
+  const seq = [];
+  const push = (u, color) => {
+    if (!seq.length || Math.abs(seq[seq.length - 1].u - u) > 1e-6) seq.push({ u, color });
+  };
+  push(0, norm[0].color);
+  norm.forEach((s) => push(s.u, s.color));
+  if (norm[norm.length - 1].u < 100) push(100, norm[norm.length - 1].color);
+  for (let i = norm.length - 2; i >= 1; i--) push(200 - norm[i].u, norm[i].color);
+  push(200, norm[0].color);
+  const out = [];
+  for (let k = 0; k < cycles; k++) {
+    seq.forEach((s) => {
+      const p = (k * 200 + s.u) / (cycles * 200);
+      if (!out.length || Math.abs(out[out.length - 1].p - p) > 1e-6) out.push({ p, color: s.color });
+    });
+  }
+  return out;
+}
+
 function makeGradient(c, w, h, g, phase = 0) {
   const cx = w / 2;
   const cy = h / 2;
@@ -313,12 +336,19 @@ function makeGradient(c, w, h, g, phase = 0) {
   }
   const rad = (g.angle * Math.PI) / 180;
   const len = Math.sqrt(w * w + h * h) / 2;
-  const shift = g.animate ? Math.sin(phase * Math.PI * 2) * len * 0.45 : 0;
-  const dx = Math.cos(rad) * shift;
-  const dy = Math.sin(rad) * shift;
+  const ux = Math.cos(rad);
+  const uy = Math.sin(rad);
+  if (g.animate) {
+    const span = 6 * len;
+    const shift = phase * 2 * len;
+    return c.createLinearGradient(
+      cx - ux * span / 2 + ux * shift, cy - uy * span / 2 + uy * shift,
+      cx + ux * span / 2 + ux * shift, cy + uy * span / 2 + uy * shift
+    );
+  }
   return c.createLinearGradient(
-    cx - Math.cos(rad) * len + dx, cy - Math.sin(rad) * len + dy,
-    cx + Math.cos(rad) * len + dx, cy + Math.sin(rad) * len + dy
+    cx - ux * len, cy - uy * len,
+    cx + ux * len, cy + uy * len
   );
 }
 
@@ -380,15 +410,19 @@ function getGradientCanvas(layer, img) {
   const o = off.getContext('2d');
   o.drawImage(img, 0, 0, w, h);
 
-  const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
-  const phase = animPhaseKey(g) === 'static' ? 0 : gradientPhase();
+  const rawStops = [...g.stops].sort((a, b) => a.pos - b.pos);
+  const animated = !!(g.enabled && g.animate);
+  const phase = animated ? gradientPhase() : 0;
   const grad = makeGradient(o, w, h, g, phase);
+  const stops = animated && g.mode !== 'mask'
+    ? buildCyclicStops(g, g.type === 'radial' ? 1 : 3)
+    : rawStops.map((s) => ({ p: clamp(Number(s.pos) || 0, 0, 100) / 100, color: s.color }));
 
   if (g.mode === 'mask') {
     o.globalCompositeOperation = 'destination-in';
     stops.forEach((s) => {
-      const alpha = clamp(1 - (s.pos / 100) * g.opacity, 0, 1);
-      grad.addColorStop(s.pos / 100, `rgba(255,255,255,${alpha})`);
+      const alpha = clamp(1 - s.p * g.opacity, 0, 1);
+      grad.addColorStop(s.p, `rgba(255,255,255,${alpha})`);
     });
     o.fillStyle = grad;
     o.fillRect(0, 0, w, h);
@@ -400,7 +434,7 @@ function getGradientCanvas(layer, img) {
     mask.getContext('2d').drawImage(img, 0, 0, w, h);
 
     o.globalCompositeOperation = g.blendMode || 'source-over';
-    stops.forEach((s) => grad.addColorStop(s.pos / 100, hexToRgba(s.color, g.opacity)));
+    stops.forEach((s) => grad.addColorStop(s.p, hexToRgba(s.color, g.opacity)));
     o.fillStyle = grad;
     o.fillRect(0, 0, w, h);
 
@@ -713,13 +747,17 @@ $('resetStopsBtn').onclick = () => {
 };
 
 function cssGradient(g) {
-  const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
   const prefix = g.type === 'radial' ? 'radial-gradient(circle' : `linear-gradient(${g.angle + 90}deg`;
   if (g.mode === 'mask') {
-    const parts = stops.map((s) => `rgba(255,255,255,${clamp(1 - (s.pos / 100) * g.opacity, 0, 1)}) ${s.pos}%`);
+    const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
+    const parts = stops.map((s) => `rgba(255,255,255,${clamp(1 - (Number(s.pos) || 0) / 100 * g.opacity, 0, 1)}) ${s.pos}%`);
     return `${prefix}, ${parts.join(', ')})`;
   }
-  const parts = stops.map((s) => `${hexToRgba(s.color, g.opacity)} ${s.pos}%`);
+  const animated = !!(g.enabled && g.animate);
+  const stops = animated
+    ? buildCyclicStops(g, g.type === 'radial' ? 1 : 3)
+    : [...g.stops].sort((a, b) => a.pos - b.pos).map((s) => ({ p: clamp(Number(s.pos) || 0, 0, 100) / 100, color: s.color }));
+  const parts = stops.map((s) => `${hexToRgba(s.color, g.opacity)} ${(s.p * 100).toFixed(2)}%`);
   return `${prefix}, ${parts.join(', ')})`;
 }
 
@@ -764,16 +802,19 @@ function applyPreviewPhase() {
     preview.style.removeProperty('background-size');
     preview.style.removeProperty('background-position');
     preview.style.removeProperty('--sheen-duration');
-    preview.style.removeProperty('--sheen-angle');
+    preview.style.removeProperty('--sheen-rotate');
     return;
   }
-  const p = Math.round((0.5 + 0.5 * Math.sin(gradientPhase() * Math.PI * 2)) * 100);
+  const rad = (layer.gradient.angle * Math.PI) / 180;
+  const u = gradientPhase() * 2 - 1;
+  const px = 50 + 50 * u * Math.cos(rad);
+  const py = 50 + 50 * u * Math.sin(rad);
   const speed = clamp(layer.gradient.speed || 1, 0.2, 3);
   preview.classList.add('is-animating');
-  preview.style.backgroundSize = '220% 220%';
-  preview.style.backgroundPosition = `${p}% 50%`;
+  preview.style.backgroundSize = '300% 300%';
+  preview.style.backgroundPosition = `${px.toFixed(2)}% ${py.toFixed(2)}%`;
   preview.style.setProperty('--sheen-duration', `${(6 / speed).toFixed(2)}s`);
-  preview.style.setProperty('--sheen-angle', `${layer.gradient.angle + 90}deg`);
+  preview.style.setProperty('--sheen-rotate', `${layer.gradient.angle}deg`);
 }
 
 function anyGradientAnimating() {
