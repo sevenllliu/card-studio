@@ -326,6 +326,41 @@ function buildCyclicStops(g, cycles = 3) {
   return out;
 }
 
+function parseHexColor(hex) {
+  const h = String(hex || '').replace('#', '');
+  const full = h.length === 3 ? h.split('').map((x) => x + x).join('') : h;
+  return [parseInt(full.slice(0, 2), 16) || 0, parseInt(full.slice(2, 4), 16) || 0, parseInt(full.slice(4, 6), 16) || 0];
+}
+
+function mixHexColor(a, b, t) {
+  const ca = parseHexColor(a);
+  const cb = parseHexColor(b);
+  const mixed = ca.map((v, i) => Math.round(v + (cb[i] - v) * t));
+  return `#${mixed.map((v) => clamp(v, 0, 255).toString(16).padStart(2, '0')).join('')}`;
+}
+
+function sampleCyclicColor(stops, x) {
+  let i = 0;
+  while (i < stops.length - 2 && stops[i + 1].p < x) i++;
+  const a = stops[i];
+  const b = stops[i + 1] || a;
+  const t = b.p === a.p ? 0 : clamp((x - a.p) / (b.p - a.p), 0, 1);
+  return mixHexColor(a.color, b.color, t);
+}
+
+function shiftedCyclicStops(g, phase, cycles) {
+  const base = buildCyclicStops(g, cycles);
+  const period = 1 / cycles;
+  const start = (((phase % 1) + 1) % 1) * period;
+  const ext = [...base, ...base.map((s) => ({ p: s.p + 1, color: s.color }))];
+  const out = [{ p: 0, color: sampleCyclicColor(ext, start) }];
+  ext.forEach((s) => {
+    if (s.p > start && s.p < start + 1) out.push({ p: s.p - start, color: s.color });
+  });
+  out.push({ p: 1, color: sampleCyclicColor(ext, start + 1) });
+  return out;
+}
+
 function makeGradient(c, w, h, g, phase = 0) {
   const cx = w / 2;
   const cy = h / 2;
@@ -416,7 +451,7 @@ function getGradientCanvas(layer, img) {
   const phase = animated ? gradientPhase() : 0;
   const grad = makeGradient(o, w, h, g, phase);
   const stops = animated && g.mode !== 'mask'
-    ? buildCyclicStops(g, g.type === 'radial' ? 1 : 3)
+    ? shiftedCyclicStops(g, phase, g.type === 'radial' ? 1 : 3)
     : rawStops.map((s) => ({ p: clamp(Number(s.pos) || 0, 0, 100) / 100, color: s.color }));
 
   if (g.mode === 'mask') {
@@ -747,7 +782,7 @@ $('resetStopsBtn').onclick = () => {
   commit();
 };
 
-function cssGradient(g) {
+function cssGradient(g, phase = 0) {
   const prefix = g.type === 'radial' ? 'radial-gradient(circle' : `linear-gradient(${g.angle + 90}deg`;
   if (g.mode === 'mask') {
     const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
@@ -756,7 +791,7 @@ function cssGradient(g) {
   }
   const animated = !!(g.enabled && g.animate);
   const stops = animated
-    ? buildCyclicStops(g, g.type === 'radial' ? 1 : 3)
+    ? shiftedCyclicStops(g, phase, g.type === 'radial' ? 1 : 3)
     : [...g.stops].sort((a, b) => a.pos - b.pos).map((s) => ({ p: clamp(Number(s.pos) || 0, 0, 100) / 100, color: s.color }));
   const parts = stops.map((s) => `${hexToRgba(s.color, g.opacity)} ${(s.p * 100).toFixed(2)}%`);
   return `${prefix}, ${parts.join(', ')})`;
@@ -790,8 +825,8 @@ function updateGradientPreview() {
   }
   updateAngleDialColors(layer.gradient);
   preview.style.background = layer.gradient.mode === 'mask'
-    ? `${cssGradient(layer.gradient)}, repeating-conic-gradient(#2a3042 0 25%, #1c2130 0 50%) 50% / 12px 12px`
-    : cssGradient(layer.gradient);
+    ? `${cssGradient(layer.gradient, gradientPhase())}, repeating-conic-gradient(#2a3042 0 25%, #1c2130 0 50%) 50% / 12px 12px`
+    : cssGradient(layer.gradient, gradientPhase());
   applyPreviewPhase();
 }
 
@@ -806,14 +841,10 @@ function applyPreviewPhase() {
     preview.style.removeProperty('--sheen-rotate');
     return;
   }
-  const rad = (layer.gradient.angle * Math.PI) / 180;
-  const u = gradientPhase() * 2 - 1;
-  const px = 50 + 50 * u * Math.cos(rad);
-  const py = 50 + 50 * u * Math.sin(rad);
   const speed = clamp(layer.gradient.speed || 1, 0.2, 3);
   preview.classList.add('is-animating');
-  preview.style.backgroundSize = '300% 300%';
-  preview.style.backgroundPosition = `${px.toFixed(2)}% ${py.toFixed(2)}%`;
+  preview.style.removeProperty('background-size');
+  preview.style.removeProperty('background-position');
   preview.style.setProperty('--sheen-duration', `${(6 / speed).toFixed(2)}s`);
   preview.style.setProperty('--sheen-rotate', `${layer.gradient.angle}deg`);
 }
@@ -836,7 +867,7 @@ function animateTick(now) {
   if (bucket !== gradMotion.lastBucket) {
     gradMotion.lastBucket = bucket;
     render();
-    applyPreviewPhase();
+    updateGradientPreview();
   }
   gradMotion.raf = requestAnimationFrame(animateTick);
 }
