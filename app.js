@@ -496,6 +496,7 @@ function switchSideTab(tab) {
   $('paneGradient').hidden = tab !== 'gradient';
   $('paneTexture').hidden = tab !== 'texture';
   $('paneSolid').hidden = tab !== 'solid';
+  try { localStorage.setItem('card-studio-side-tab', tab); } catch (err) {}
 }
 
 document.querySelectorAll('.side-tab').forEach((btn) => {
@@ -1398,6 +1399,10 @@ document.addEventListener('keydown', (e) => {
     if (savedSel && state.layers.some((l) => l.id === savedSel)) {
       state.selectedId = savedSel;
     }
+  } catch (err) {}
+  try {
+    const savedTab = localStorage.getItem('card-studio-side-tab');
+    if (savedTab && ['solid', 'gradient', 'texture'].includes(savedTab)) switchSideTab(savedTab);
   } catch (err) {}
   renderLayerList();
   syncAllPanels();
