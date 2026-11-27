@@ -957,14 +957,6 @@ $('solidBlend').addEventListener('change', (e) => {
 });
 
 /* =========================================================
-   卡牌名称
-   ========================================================= */
-$('cardName').addEventListener('input', (e) => {
-  state.cardName = e.target.value;
-  commitDebounced();
-});
-
-/* =========================================================
    上传
    ========================================================= */
 function handleFiles(files) {
@@ -1068,7 +1060,6 @@ function restore(packedStr) {
     if (texture.src) loadImage(texture.src);
     return { ...l, gradient: JSON.parse(JSON.stringify(l.gradient)), texture, solid };
   });
-  $('cardName').value = state.cardName;
   renderLayerList();
   syncAllPanels();
   render();
@@ -1324,7 +1315,6 @@ $('resetBtn').onclick = () => {
   W = canvas.width = 420;
   H = canvas.height = 588;
   $('canvasSizeChip').textContent = '上传图片后自动适配画布';
-  $('cardName').value = state.cardName;
   restore(packSnapshot(JSON.stringify(snapshot())));
   commit();
   toast('画布已重置');
