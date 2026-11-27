@@ -636,6 +636,22 @@ $('addStopBtn').onclick = () => {
   commit();
 };
 
+$('resetStopsBtn').onclick = () => {
+  const layer = getSelected();
+  if (!layer) return;
+  const stops = [...layer.gradient.stops].sort((a, b) => a.pos - b.pos);
+  if (stops.length < 2) return;
+  stops.forEach((s, i) => {
+    s.pos = Math.round((i * 100) / (stops.length - 1));
+  });
+  layer.gradient.stops = stops;
+  layer._gradKey = null;
+  renderStops();
+  updateGradientPreview();
+  render();
+  commit();
+};
+
 function cssGradient(g) {
   const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
   const prefix = g.type === 'radial' ? 'radial-gradient(circle' : `linear-gradient(${g.angle + 90}deg`;
