@@ -375,6 +375,21 @@ function visibleCyclicStops(g, phase, cycles) {
   return out.filter((s, i, arr) => i === 0 || Math.abs(s.p - arr[i - 1].p) > 1e-6);
 }
 
+function phaseShiftedStops(g, phase) {
+  const seq = buildCyclicStops(g, 1);
+  const p = (((phase % 1) + 1) % 1);
+  const shifted = seq
+    .map((s) => ({ t: ((s.p - p) % 1 + 1) % 1, color: s.color }))
+    .filter((s, i, arr) => i === 0 || Math.abs(s.t - arr[i - 1].t) > 1e-6)
+    .sort((a, b) => a.t - b.t);
+  const out = [{ p: 0, color: sampleCyclicColor(seq, p) }];
+  shifted.forEach((s) => {
+    if (s.t > 0 && s.t < 1) out.push({ p: s.t, color: s.color });
+  });
+  out.push({ p: 1, color: sampleCyclicColor(seq, p) });
+  return out.filter((s, i, arr) => i === 0 || Math.abs(s.p - arr[i - 1].p) > 1e-6);
+}
+
 function makeGradient(c, w, h, g, phase = 0) {
   const cx = w / 2;
   const cy = h / 2;
@@ -387,15 +402,6 @@ function makeGradient(c, w, h, g, phase = 0) {
   const len = Math.sqrt(w * w + h * h) / 2;
   const ux = Math.cos(rad);
   const uy = Math.sin(rad);
-  if (g.animate) {
-    const half = Math.abs(ux) * w / 2 + Math.abs(uy) * h / 2;
-    const span = 6 * half;
-    const shift = phase * 2 * half;
-    return c.createLinearGradient(
-      cx - ux * span / 2 + ux * shift, cy - uy * span / 2 + uy * shift,
-      cx + ux * span / 2 + ux * shift, cy + uy * span / 2 + uy * shift
-    );
-  }
   return c.createLinearGradient(
     cx - ux * len, cy - uy * len,
     cx + ux * len, cy + uy * len
@@ -465,7 +471,7 @@ function getGradientCanvas(layer, img) {
   const phase = animated ? gradientPhase() : 0;
   const grad = makeGradient(o, w, h, g, phase);
   const stops = animated && g.mode !== 'mask'
-    ? shiftedCyclicStops(g, phase, g.type === 'radial' ? 1 : 3)
+    ? phaseShiftedStops(g, phase)
     : rawStops.map((s) => ({ p: clamp(Number(s.pos) || 0, 0, 100) / 100, color: s.color }));
 
   if (g.mode === 'mask') {
@@ -805,7 +811,7 @@ function cssGradient(g, phase = 0) {
   }
   const animated = !!(g.enabled && g.animate);
   const stops = animated
-    ? visibleCyclicStops(g, phase, g.type === 'radial' ? 1 : 3)
+    ? phaseShiftedStops(g, phase)
     : [...g.stops].sort((a, b) => a.pos - b.pos).map((s) => ({ p: clamp(Number(s.pos) || 0, 0, 100) / 100, color: s.color }));
   const parts = stops.map((s) => `${hexToRgba(s.color, g.opacity)} ${(s.p * 100).toFixed(2)}%`);
   return `${prefix}, ${parts.join(', ')})`;
