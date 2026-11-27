@@ -219,7 +219,7 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   content: ''; position: absolute; inset: 12px; border-radius: 50%;
   border: 1px dashed var(--line);
   background:
-    radial-gradient(circle at calc(100% - 2px) 50%, var(--accent) 0 2px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 2px) 50%, var(--dial-c1, var(--accent)) 0 2px, transparent 2.5px),
     radial-gradient(circle at 50% 2px, var(--text-faint) 0 2px, transparent 2.5px),
     radial-gradient(circle at 50% calc(100% - 2px), var(--text-faint) 0 2px, transparent 2.5px),
     radial-gradient(circle at 2px 50%, var(--text-faint) 0 2px, transparent 2.5px);
@@ -227,20 +227,20 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .angle-dial-axis {
   position: absolute; left: 50%; top: 50%; width: 84px; height: 2px;
   margin-left: -42px; margin-top: -1px; border-radius: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2)); pointer-events: none;
+  background: linear-gradient(90deg, var(--dial-c1, var(--accent)), var(--dial-c2, var(--accent-2))); pointer-events: none;
 }
 .angle-dial-axis::before, .angle-dial-axis::after {
   content: ''; position: absolute; top: 50%; width: 12px; height: 12px;
   margin-top: -6px; border-radius: 50%; background: #fff;
-  border: 2px solid var(--accent); box-shadow: 0 1px 4px rgba(35,45,80,.25);
+  border: 2px solid var(--dial-c1, var(--accent)); box-shadow: 0 1px 4px rgba(35,45,80,.25);
 }
 .angle-dial-axis::before { left: -6px; }
-.angle-dial-axis::after { right: -6px; border-color: var(--accent-2); }
+.angle-dial-axis::after { right: -6px; border-color: var(--dial-c2, var(--accent-2)); }
 .angle-dial-center {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   min-width: 46px; padding: 5px 7px; background: var(--panel);
   border: 1px solid var(--line); border-radius: 12px;
-  font-size: 12px; font-weight: 700; color: var(--accent);
+  font-size: 12px; font-weight: 700; color: var(--dial-c1, var(--accent));
   text-align: center; pointer-events: none;
 }
 .dial-mark {
