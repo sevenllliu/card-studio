@@ -53,7 +53,7 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   z-index: 10;
 }
 
-.brand { display: flex; align-items: center; gap: 10px; min-width: 210px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 210px; flex: 1; }
 .brand-mark {
   width: 36px; height: 36px;
   display: grid; place-items: center;
@@ -62,17 +62,6 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
 .brand-text strong { font-size: 15px; letter-spacing: .5px; }
 .brand-text span { font-size: 9px; color: var(--text-faint); letter-spacing: 2px; }
-
-.topbar-title { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
-.topbar-title input {
-  background: transparent; border: 1px solid transparent; color: var(--text);
-  font-size: 14px; font-weight: 600; text-align: center; width: 220px;
-  padding: 4px 10px; border-radius: 7px; outline: none; transition: .2s;
-}
-.topbar-title input:hover { border-color: var(--line); }
-.topbar-title input:focus { border-color: var(--accent); background: var(--panel-2); }
-.save-dot { font-size: 10px; color: var(--text-faint); display: flex; align-items: center; gap: 5px; }
-.save-dot::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-2); }
 
 .topbar-actions { display: flex; align-items: center; gap: 10px; min-width: 210px; justify-content: flex-end; }
 .history-group { display: flex; gap: 4px; padding-right: 10px; border-right: 1px solid var(--line); }
