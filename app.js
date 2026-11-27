@@ -313,13 +313,41 @@ function makeGradient(c, w, h, g, phase = 0) {
   }
   const rad = (g.angle * Math.PI) / 180;
   const len = Math.sqrt(w * w + h * h) / 2;
-  const shift = g.animate ? Math.sin(phase * Math.PI * 2) * len * 0.35 : 0;
+  const shift = g.animate ? Math.sin(phase * Math.PI * 2) * len * 0.45 : 0;
   const dx = Math.cos(rad) * shift;
   const dy = Math.sin(rad) * shift;
   return c.createLinearGradient(
     cx - Math.cos(rad) * len + dx, cy - Math.sin(rad) * len + dy,
     cx + Math.cos(rad) * len + dx, cy + Math.sin(rad) * len + dy
   );
+}
+
+function drawGradientSheen(o, w, h, g, phase) {
+  const cx = w / 2;
+  const cy = h / 2;
+  const len = Math.sqrt(w * w + h * h) / 2;
+  const rad = (g.angle * Math.PI) / 180;
+  const dx = Math.cos(rad);
+  const dy = Math.sin(rad);
+  const pos = (phase * 2 - 1) * len * 1.25;
+  const band = Math.max(18, len * 0.5);
+  const sheen = o.createLinearGradient(
+    cx + dx * (pos - band), cy + dy * (pos - band),
+    cx + dx * (pos + band), cy + dy * (pos + band)
+  );
+  sheen.addColorStop(0, 'rgba(255,255,255,0)');
+  sheen.addColorStop(0.25, 'rgba(255,255,255,0.02)');
+  sheen.addColorStop(0.45, 'rgba(255,255,255,0.16)');
+  sheen.addColorStop(0.5, 'rgba(255,255,255,0.34)');
+  sheen.addColorStop(0.55, 'rgba(255,255,255,0.16)');
+  sheen.addColorStop(0.75, 'rgba(255,255,255,0.02)');
+  sheen.addColorStop(1, 'rgba(255,255,255,0)');
+  o.save();
+  o.globalCompositeOperation = 'screen';
+  o.globalAlpha = 1;
+  o.fillStyle = sheen;
+  o.fillRect(0, 0, w, h);
+  o.restore();
 }
 
 function animPhaseKey(g) {
@@ -353,7 +381,8 @@ function getGradientCanvas(layer, img) {
   o.drawImage(img, 0, 0, w, h);
 
   const stops = [...g.stops].sort((a, b) => a.pos - b.pos);
-  const grad = makeGradient(o, w, h, g, animPhaseKey(g) === 'static' ? 0 : gradientPhase());
+  const phase = animPhaseKey(g) === 'static' ? 0 : gradientPhase();
+  const grad = makeGradient(o, w, h, g, phase);
 
   if (g.mode === 'mask') {
     o.globalCompositeOperation = 'destination-in';
@@ -374,6 +403,8 @@ function getGradientCanvas(layer, img) {
     stops.forEach((s) => grad.addColorStop(s.pos / 100, hexToRgba(s.color, g.opacity)));
     o.fillStyle = grad;
     o.fillRect(0, 0, w, h);
+
+    if (g.enabled && g.animate) drawGradientSheen(o, w, h, g, phase);
 
     o.globalCompositeOperation = 'destination-in';
     o.drawImage(mask, 0, 0);
@@ -732,12 +763,17 @@ function applyPreviewPhase() {
     preview.classList.remove('is-animating');
     preview.style.removeProperty('background-size');
     preview.style.removeProperty('background-position');
+    preview.style.removeProperty('--sheen-duration');
+    preview.style.removeProperty('--sheen-angle');
     return;
   }
   const p = Math.round((0.5 + 0.5 * Math.sin(gradientPhase() * Math.PI * 2)) * 100);
+  const speed = clamp(layer.gradient.speed || 1, 0.2, 3);
   preview.classList.add('is-animating');
   preview.style.backgroundSize = '220% 220%';
   preview.style.backgroundPosition = `${p}% 50%`;
+  preview.style.setProperty('--sheen-duration', `${(6 / speed).toFixed(2)}s`);
+  preview.style.setProperty('--sheen-angle', `${layer.gradient.angle + 90}deg`);
 }
 
 function anyGradientAnimating() {
@@ -1490,7 +1526,7 @@ $('exportBtn').onclick = () => {
   out.height = H * scale;
   const oc = out.getContext('2d');
   oc.scale(scale, scale);
-  gradMotion.exportPhase = 0;
+  gradMotion.exportPhase = 0.5;
   try {
     render(oc, { export: true });
   } finally {
