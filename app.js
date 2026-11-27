@@ -974,9 +974,6 @@ function handleFiles(files) {
   toast(`已添加 ${images.length} 个图层`);
 }
 
-$('fileInput').addEventListener('change', (e) => { handleFiles(e.target.files); e.target.value = ''; });
-$('uploadBtn').onclick = () => $('fileInput').click();
-
 const leftSidebar = document.querySelector('.sidebar-left');
 let dragDepth = 0;
 leftSidebar.addEventListener('dragenter', (e) => {
