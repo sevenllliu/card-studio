@@ -835,16 +835,12 @@ function applyPreviewPhase() {
   const preview = $('gradientPreview');
   if (!layer || !layer.gradient.enabled || !layer.gradient.animate) {
     preview.classList.remove('is-animating');
-    preview.style.removeProperty('background-size');
-    preview.style.removeProperty('background-position');
     preview.style.removeProperty('--sheen-duration');
     preview.style.removeProperty('--sheen-rotate');
     return;
   }
   const speed = clamp(layer.gradient.speed || 1, 0.2, 3);
   preview.classList.add('is-animating');
-  preview.style.removeProperty('background-size');
-  preview.style.removeProperty('background-position');
   preview.style.setProperty('--sheen-duration', `${(6 / speed).toFixed(2)}s`);
   preview.style.setProperty('--sheen-rotate', `${layer.gradient.angle}deg`);
 }
