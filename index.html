@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="favicon-32.png?v=3" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16.png?v=3" sizes="16x16">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
-<link rel="stylesheet" href="styles.css?v=2026112708">
+<link rel="stylesheet" href="styles.css?v=2026112709">
 </head>
 <body>
 <div class="app">
@@ -94,7 +94,7 @@
 
         <div id="gradBody" class="grad-body disabled">
           <div class="field-row" id="gradBlendRow">
-            <label class="field-label">渐变混合模式</label>
+            <label class="field-label">混合模式</label>
             <select id="gradBlend" class="select">
               <option value="source-over">正常</option>
               <option value="multiply">正片叠底</option>
@@ -115,7 +115,7 @@
           <div class="gradient-preview" id="gradientPreview"></div>
 
           <div class="field-row">
-            <label class="field-label">渐变类型</label>
+            <label class="field-label">类型</label>
             <div class="seg-control">
               <button class="seg active" data-type="linear">线性</button>
               <button class="seg" data-type="radial">径向</button>
@@ -140,7 +140,7 @@
 
           <div class="field-row">
             <label class="field-label">
-              <span id="intensityLabel">渐变强度</span>
+              <span id="intensityLabel">强度</span>
               <span class="val" id="gradOpacityVal">70%</span>
             </label>
             <input type="range" id="gradOpacity" class="range" min="0" max="100" value="70">
@@ -151,7 +151,6 @@
             <button class="mini-btn" id="addStopBtn">＋ 添加</button>
           </div>
           <div class="stops-list" id="stopsList"></div>
-          <p class="tip">点击色块修改颜色，拖动滑块调整节点位置。</p>
         </div>
 
         <div id="gradNoLayer" class="no-selection small">
@@ -172,7 +171,7 @@
 
         <div id="texBody" class="grad-body disabled">
           <div class="field-row">
-            <label class="field-label">材质混合模式</label>
+            <label class="field-label">混合模式</label>
             <select id="texBlend" class="select">
               <option value="source-over">正常</option>
               <option value="multiply">正片叠底</option>
@@ -198,7 +197,7 @@
 
           <div class="field-row">
             <label class="field-label">
-              <span>材质缩放</span>
+              <span>缩放</span>
               <span class="label-right">
                 <span class="val" id="texScaleVal">100%</span>
                 <button class="reset-btn" id="texScaleReset" title="重置缩放">↺</button>
@@ -209,7 +208,7 @@
 
           <div class="field-row">
             <label class="field-label">
-              <span>材质强度</span>
+              <span>强度</span>
               <span class="label-right">
                 <span class="val" id="texOpacityVal">100%</span>
                 <button class="reset-btn" id="texOpacityReset" title="重置强度">↺</button>
@@ -217,8 +216,6 @@
             </label>
             <input type="range" id="texOpacity" class="range" min="0" max="100" value="100">
           </div>
-
-          <p class="tip">材质只覆盖图案非透明区域，透明区域保持透明。</p>
         </div>
 
         <div id="texNoLayer" class="no-selection small">
@@ -283,6 +280,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=2026112708"></script>
+<script src="app.js?v=2026112709"></script>
 </body>
 </html>
