@@ -174,6 +174,9 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 
 /* ============ 表单控件 ============ */
 .field-row { margin-bottom: 14px; }
+.field-row[hidden] { display: none; }
+.field-row.inline-switch { display: flex; align-items: center; justify-content: space-between; }
+.field-row.inline-switch .field-label { margin: 0; }
 .field-row.compact { margin-bottom: 10px; }
 .field-label { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-dim); margin-bottom: 7px; }
 .field-label .val { color: var(--accent); font-variant-numeric: tabular-nums; font-size: 10.5px; }
@@ -340,6 +343,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   border-radius: 6px; border: 1px solid var(--line);
   box-shadow: inset 0 0 0 2px rgba(255,255,255,.55);
 }
+.gradient-preview.is-animating { will-change: background-position; }
 .seg-control { display: flex; gap: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px; padding: 3px; }
 .seg { flex: 1; padding: 6px; border: none; background: transparent; color: var(--text-dim); border-radius: 5px; font-size: 11px; }
 .seg.active { background: var(--panel); color: var(--accent); box-shadow: 0 1px 5px rgba(35,45,80,.08); }
