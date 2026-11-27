@@ -237,9 +237,9 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 }
 .angle-dial-axis::before { left: -6px; }
 .angle-dial-axis::after { right: -6px; border-color: var(--dial-c2, var(--accent-2)); }
-.angle-dial-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.angle-dial-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
 .angle-dial-wrap .angle-dial { margin: 0; }
-.angle-dial-label { font-size: 11px; font-weight: 600; color: var(--text-dim); white-space: nowrap; }
+.angle-dial-label { position: absolute; left: 0; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 600; color: var(--text-dim); white-space: nowrap; }
 .dial-mark {
   position: absolute; font-size: 9px; color: var(--text-faint);
   pointer-events: none; font-variant-numeric: tabular-nums;
