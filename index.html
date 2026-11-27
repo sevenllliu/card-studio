@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="favicon-32.png?v=3" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16.png?v=3" sizes="16x16">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
-<link rel="stylesheet" href="styles.css?v=2026112718">
+<link rel="stylesheet" href="styles.css?v=2026112719">
 </head>
 <body>
 <div class="app">
@@ -122,13 +122,15 @@
               <span class="val" id="angleVal">90°</span>
             </label>
             <div class="gradient-preview" id="gradientPreview" title="渐变预览"></div>
-            <div class="angle-dial" id="angleDial" title="拖动转盘设置角度">
-              <span class="dial-mark mark-0">0°</span>
-              <span class="dial-mark mark-90">180°</span>
-              <span class="dial-mark mark-180">270°</span>
-              <span class="dial-mark mark-270">90°</span>
-              <div class="angle-dial-axis" id="angleAxis"></div>
+            <div class="angle-dial-wrap">
               <span class="angle-dial-label">角度</span>
+              <div class="angle-dial" id="angleDial" title="拖动转盘设置角度">
+                <span class="dial-mark mark-0">0°</span>
+                <span class="dial-mark mark-90">180°</span>
+                <span class="dial-mark mark-180">270°</span>
+                <span class="dial-mark mark-270">90°</span>
+                <div class="angle-dial-axis" id="angleAxis"></div>
+              </div>
             </div>
             <input type="range" id="gradAngle" class="range" min="0" max="360" value="90" hidden>
           </div>
@@ -275,6 +277,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=2026112718"></script>
+<script src="app.js?v=2026112719"></script>
 </body>
 </html>
