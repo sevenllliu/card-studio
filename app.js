@@ -422,11 +422,13 @@ function drawGradientSheen(o, w, h, g, phase) {
     cx + dx * (pos + band), cy + dy * (pos + band)
   );
   sheen.addColorStop(0, 'rgba(255,255,255,0)');
-  sheen.addColorStop(0.25, 'rgba(255,255,255,0.02)');
-  sheen.addColorStop(0.45, 'rgba(255,255,255,0.16)');
-  sheen.addColorStop(0.5, 'rgba(255,255,255,0.34)');
-  sheen.addColorStop(0.55, 'rgba(255,255,255,0.16)');
-  sheen.addColorStop(0.75, 'rgba(255,255,255,0.02)');
+  sheen.addColorStop(0.22, 'rgba(255,255,255,0.04)');
+  sheen.addColorStop(0.4, 'rgba(255,255,255,0.20)');
+  sheen.addColorStop(0.47, 'rgba(255,255,255,0.42)');
+  sheen.addColorStop(0.5, 'rgba(255,255,255,0.60)');
+  sheen.addColorStop(0.53, 'rgba(255,255,255,0.42)');
+  sheen.addColorStop(0.6, 'rgba(255,255,255,0.20)');
+  sheen.addColorStop(0.78, 'rgba(255,255,255,0.04)');
   sheen.addColorStop(1, 'rgba(255,255,255,0)');
   o.save();
   o.globalCompositeOperation = 'screen';
