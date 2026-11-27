@@ -56,7 +56,7 @@ function loadImage(src, onReady) {
    ========================================================= */
 function defaultGradient() {
   return {
-    enabled: true,
+    enabled: false,
     mode: 'overlay',
     type: 'linear',
     angle: 90,
