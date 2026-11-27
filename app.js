@@ -976,27 +976,41 @@ function handleFiles(files) {
 
 const leftSidebar = document.querySelector('.sidebar-left');
 let dragDepth = 0;
+
+function dragHasFiles(e) {
+  return e.dataTransfer && [...e.dataTransfer.types].includes('Files');
+}
+function clearDragHighlight() {
+  dragDepth = 0;
+  leftSidebar.classList.remove('drag-over');
+}
+
 leftSidebar.addEventListener('dragenter', (e) => {
+  if (!dragHasFiles(e)) return;
   e.preventDefault();
   dragDepth++;
   leftSidebar.classList.add('drag-over');
 });
-leftSidebar.addEventListener('dragover', (e) => e.preventDefault());
 leftSidebar.addEventListener('dragleave', (e) => {
+  if (!dragHasFiles(e)) return;
   e.preventDefault();
   dragDepth = Math.max(0, dragDepth - 1);
   if (!dragDepth) leftSidebar.classList.remove('drag-over');
 });
-leftSidebar.addEventListener('drop', (e) => {
-  e.preventDefault();
-  dragDepth = 0;
-  leftSidebar.classList.remove('drag-over');
-  handleFiles(e.dataTransfer.files);
-});
 
-const stage = $('stage');
-['dragenter', 'dragover'].forEach((evt) => stage.addEventListener(evt, (e) => e.preventDefault()));
-stage.addEventListener('drop', (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); });
+// 在 document 层统一拦截文件拖放，避免浏览器把图片当作页面直接打开
+document.addEventListener('dragover', (e) => {
+  if (dragHasFiles(e)) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  }
+});
+document.addEventListener('drop', (e) => {
+  if (!dragHasFiles(e)) return;
+  e.preventDefault();
+  clearDragHighlight();
+  if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
 
 /* =========================================================
    历史记录
