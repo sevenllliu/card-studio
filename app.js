@@ -482,7 +482,6 @@ function syncGradientPanel() {
   $('intensityLabel').textContent = '强度';
   $('gradAngle').value = g.angle;
   $('angleVal').textContent = `${g.angle}°`;
-  $('angleCenter').textContent = `${g.angle}°`;
   $('angleAxis').style.transform = `rotate(${g.angle}deg)`;
   $('gradOpacity').value = Math.round(g.opacity * 100);
   $('gradOpacityVal').textContent = `${Math.round(g.opacity * 100)}%`;
@@ -704,7 +703,6 @@ $('gradAngle').addEventListener('input', (e) => {
   const deg = parseInt(e.target.value, 10);
   layer.gradient.angle = deg;
   $('angleVal').textContent = `${deg}°`;
-  $('angleCenter').textContent = `${deg}°`;
   $('angleAxis').style.transform = `rotate(${deg}deg)`;
   layer._gradKey = null;
   updateGradientPreview();
@@ -722,10 +720,13 @@ function setAngleFromDial(e) {
   const cy = rect.top + rect.height / 2;
   let deg = Math.round((Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI);
   if (deg < 0) deg += 360;
+  const snapStep = 45;
+  const snapThreshold = 8;
+  const snapped = Math.round(deg / snapStep) * snapStep;
+  if (Math.abs(deg - snapped) <= snapThreshold) deg = (snapped + 360) % 360;
   layer.gradient.angle = deg;
   $('gradAngle').value = deg;
   $('angleVal').textContent = `${deg}°`;
-  $('angleCenter').textContent = `${deg}°`;
   $('angleAxis').style.transform = `rotate(${deg}deg)`;
   layer._gradKey = null;
   updateGradientPreview();
