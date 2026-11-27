@@ -479,7 +479,7 @@ function syncGradientPanel() {
   document.querySelectorAll('.seg').forEach((b) => b.classList.toggle('active', b.dataset.type === g.type));
   $('angleRow').style.display = 'block';
   const isRadial = g.type === 'radial';
-  $('angleValueRow').style.visibility = isRadial ? 'hidden' : 'visible';
+  $('angleVal').style.visibility = isRadial ? 'hidden' : 'visible';
   $('angleDialWrap').hidden = isRadial;
   $('gradBlendRow').style.display = 'block';
   $('intensityLabel').textContent = '强度';
