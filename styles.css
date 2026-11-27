@@ -231,7 +231,7 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   background: linear-gradient(90deg, var(--dial-c1, var(--accent)), var(--dial-c2, var(--accent-2))); pointer-events: none;
 }
 .angle-dial-axis::before, .angle-dial-axis::after {
-  content: ''; position: absolute; top: 50%; width: 12px; height: 12px;
+  content: ''; position: absolute; top: 50%; width: 12px; height: 12px; box-sizing: border-box;
   margin-top: -6px; border-radius: 50%; background: #fff;
   border: 2px solid var(--dial-c1, var(--accent)); box-shadow: 0 1px 4px rgba(35,45,80,.25);
 }
