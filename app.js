@@ -480,7 +480,7 @@ function syncGradientPanel() {
   document.querySelectorAll('.seg').forEach((b) => b.classList.toggle('active', b.dataset.type === g.type));
   $('angleRow').style.display = g.type === 'radial' ? 'none' : 'block';
   $('gradBlendRow').style.display = g.mode === 'mask' ? 'none' : 'block';
-  $('intensityLabel').textContent = g.mode === 'mask' ? '蒙版强度' : '渐变强度';
+  $('intensityLabel').textContent = g.mode === 'mask' ? '蒙版强度' : '强度';
   $('gradAngle').value = g.angle;
   $('angleVal').textContent = `${g.angle}°`;
   $('angleCenter').textContent = `${g.angle}°`;
