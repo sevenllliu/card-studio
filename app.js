@@ -361,6 +361,20 @@ function shiftedCyclicStops(g, phase, cycles) {
   return out;
 }
 
+function visibleCyclicStops(g, phase, cycles) {
+  const all = shiftedCyclicStops(g, phase, cycles);
+  const period = 1 / cycles;
+  const p = (((phase % 1) + 1) % 1);
+  const start = (1 - p) * period;
+  const end = start + period;
+  const out = [{ p: 0, color: sampleCyclicColor(all, start) }];
+  all.forEach((s) => {
+    if (s.p > start && s.p < end) out.push({ p: (s.p - start) / period, color: s.color });
+  });
+  out.push({ p: 1, color: sampleCyclicColor(all, end) });
+  return out.filter((s, i, arr) => i === 0 || Math.abs(s.p - arr[i - 1].p) > 1e-6);
+}
+
 function makeGradient(c, w, h, g, phase = 0) {
   const cx = w / 2;
   const cy = h / 2;
@@ -791,7 +805,7 @@ function cssGradient(g, phase = 0) {
   }
   const animated = !!(g.enabled && g.animate);
   const stops = animated
-    ? shiftedCyclicStops(g, phase, g.type === 'radial' ? 1 : 3)
+    ? visibleCyclicStops(g, phase, g.type === 'radial' ? 1 : 3)
     : [...g.stops].sort((a, b) => a.pos - b.pos).map((s) => ({ p: clamp(Number(s.pos) || 0, 0, 100) / 100, color: s.color }));
   const parts = stops.map((s) => `${hexToRgba(s.color, g.opacity)} ${(s.p * 100).toFixed(2)}%`);
   return `${prefix}, ${parts.join(', ')})`;
